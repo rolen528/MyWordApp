@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">My Word</string>
+    <string-array name="category_array">
+        <item>토익 500점 미만</item>
+        <item>토익 500~700점</item>
+        <item>토익 800~900점</item>
+        <item>생활 영어</item>
+    </string-array>
+
+    <string-array name="count_array">
+        <item>10개</item>
+        <item>30개</item>
+        <item>50개</item>
+        <item>100개</item>
+    </string-array>
 </resources>
