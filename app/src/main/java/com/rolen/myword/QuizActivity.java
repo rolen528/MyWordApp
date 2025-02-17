@@ -1,6 +1,5 @@
 package com.rolen.myword;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.animation.Animation;
@@ -30,8 +29,6 @@ public class QuizActivity extends AppCompatActivity {
     private String[] meanings = {"사과", "바나나", "고양이", "개", "코끼리"};
     private int currentIndex = 0;
     private boolean isEnglishQuestion = true;
-    private int correctCount = 0;
-    private int wrongCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,12 +103,9 @@ public class QuizActivity extends AppCompatActivity {
             tvResult.setText("정답! 🎉");
             tvResult.setTextColor(ContextCompat.getColor(this, android.R.color.holo_blue_dark));
             score += 10;
-            correctCount++;
         } else {
             tvResult.setText("오답!\n정답: " + correctAnswer);
             tvResult.setTextColor(ContextCompat.getColor(this, android.R.color.holo_red_light));
-//            score -= 5;
-            wrongCount++;
         }
 
         updateScore();
@@ -132,17 +126,7 @@ public class QuizActivity extends AppCompatActivity {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     currentIndex++;
-                    if (currentIndex >= words.length) {
-                        // 퀴즈 종료 -> 결과 화면으로 이동
-                        Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
-                        intent.putExtra("score", score);
-                        intent.putExtra("correctCount", correctCount);
-                        intent.putExtra("wrongCount", wrongCount);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        loadNextQuestion();
-                    }
+                    loadNextQuestion();
                 }
 
                 @Override
