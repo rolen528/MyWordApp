@@ -38,9 +38,10 @@
         android:id="@+id/etAnswer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:hint="정답 입력"
-        android:textSize="20sp"
-        android:gravity="center" />
+        android:singleLine="true"
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/btnSubmit"
