@@ -1,14 +1,18 @@
 <resources>
     <string name="app_name">My Word</string>
     <string-array name="category_array">
-        <item>생활 영어</item>
+        <item>생활영어</item>
         <item>비즈니스영어</item>
+        <item>토익 500점 미만</item>
+        <item>토익 700점 미만</item>
+        <item>토익 900점 미만</item>
+
     </string-array>
 
     <string-array name="count_array">
-        <item>10개</item>
-        <item>30개</item>
-        <item>50개</item>
-        <item>100개</item>
+        <item>10</item>
+        <item>30</item>
+        <item>50</item>
+        <item>100</item>
     </string-array>
 </resources>

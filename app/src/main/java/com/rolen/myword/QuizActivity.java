@@ -3,6 +3,7 @@ package com.rolen.myword;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
@@ -13,11 +14,10 @@ import android.widget.TextView;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
+import java.util.List;
 import java.util.Random;
 
 public class QuizActivity extends AppCompatActivity {
-
     private TextView tvQuestion, tvResult, tvScore, tvProgress;
     private EditText etAnswer;
     private Button btnCheck;
@@ -26,8 +26,7 @@ public class QuizActivity extends AppCompatActivity {
     private int score = 0;
     private int timeLeft = 10000; // 10초 (밀리초)
 
-    private String[] words = {"apple", "banana", "cat", "dog", "elephant"};
-    private String[] meanings = {"사과", "바나나", "고양이", "개", "코끼리"};
+    private List<String[]> wordList;
     private int currentIndex = 0;
     private boolean isEnglishQuestion = true;
     private int correctCount = 0;
@@ -46,14 +45,26 @@ public class QuizActivity extends AppCompatActivity {
         btnCheck = findViewById(R.id.btnSubmit);
         progressBar = findViewById(R.id.progressBar);
 
+        // 🔹 전달된 단어 리스트 받기
+        wordList = (List<String[]>) getIntent().getSerializableExtra("wordList");
+
         updateScore();
         loadNextQuestion();
 
         btnCheck.setOnClickListener(v -> checkAnswer());
+        // 🔍 디버깅용 로그 추가
+        if (wordList == null || wordList.isEmpty()) {
+            Log.e("QuizActivity", "⚠️ 단어 리스트가 비어있음! 파일이 제대로 로드되지 않았을 가능성이 높음.");
+        } else {
+            Log.d("QuizActivity", "✅ 단어 개수: " + wordList.size());
+        }
+
+        currentIndex = 0;
+        loadNextQuestion();
     }
 
     private void loadNextQuestion() {
-        if (currentIndex >= words.length) {
+        if (currentIndex >= wordList.size()) {
             tvQuestion.setText("퀴즈 종료!");
             btnCheck.setEnabled(false);
             btnCheck.setOnClickListener(null);
@@ -63,9 +74,9 @@ public class QuizActivity extends AppCompatActivity {
         Random random = new Random();
         isEnglishQuestion = random.nextBoolean();
 
-        String questionText = isEnglishQuestion ? words[currentIndex] : meanings[currentIndex];
+        String questionText = isEnglishQuestion ? wordList.get(currentIndex)[0] : wordList.get(currentIndex)[1];
         tvQuestion.setText(questionText);
-        tvProgress.setText((currentIndex + 1) + " / " + words.length);
+        tvProgress.setText((currentIndex + 1) + " / " + wordList.size());
         etAnswer.getText().clear();
         etAnswer.requestFocus();
         tvResult.setVisibility(View.GONE);
@@ -100,7 +111,7 @@ public class QuizActivity extends AppCompatActivity {
         if (timer != null) timer.cancel();
 
         String userInput = etAnswer.getText().toString().trim().toLowerCase();
-        String correctAnswer = isEnglishQuestion ? meanings[currentIndex] : words[currentIndex];
+        String correctAnswer = isEnglishQuestion ? wordList.get(currentIndex)[1] : wordList.get(currentIndex)[0];
 
         if (userInput.equalsIgnoreCase(correctAnswer)) {
             tvResult.setText("정답! 🎉");
@@ -122,37 +133,21 @@ public class QuizActivity extends AppCompatActivity {
         tvResult.startAnimation(fadeIn);
 
         tvQuestion.postDelayed(() -> {
-            Animation exitAnimation = new TranslateAnimation(0, -500, 0, 0);
-            exitAnimation.setDuration(500);
-            tvQuestion.startAnimation(exitAnimation);
-            exitAnimation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    currentIndex++;
-                    if (currentIndex >= words.length) {
-                        // 퀴즈 종료 -> 결과 화면으로 이동
-                        Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
-                        intent.putExtra("score", score);
-                        intent.putExtra("correctCount", correctCount);
-                        intent.putExtra("wrongCount", wrongCount);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        loadNextQuestion();
-                    }
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            });
+            currentIndex++;
+            if (currentIndex >= wordList.size()) {
+                Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
+                intent.putExtra("score", score);
+                intent.putExtra("correctCount", correctCount);
+                intent.putExtra("wrongCount", wrongCount);
+                startActivity(intent);
+                finish();
+            } else {
+                loadNextQuestion();
+            }
         }, 1000);
     }
-        private void updateScore () {
-            tvScore.setText("점수: " + score);
-        }
+
+    private void updateScore() {
+        tvScore.setText("점수: " + score);
+    }
 }
